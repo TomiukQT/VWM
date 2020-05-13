@@ -9,18 +9,19 @@ public class DataManager : MonoBehaviour
     List<Record> records = null;
     List<Point> points;
 
+ 
     int maxX = 0;
     int maxY = 0;
 
     private void Awake()
     {
-        dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
+        //dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
     }
 
     private void Start()
     {
         //while(records == null)
-        records = dbHandler.GetRecords();
+       // records = dbHandler.GetRecords();
 
        // GetAllPoints(4, 9);
         points = new List<Point>() {new Point(1,9),
@@ -37,7 +38,8 @@ public class DataManager : MonoBehaviour
         new Point(10,4),
         new Point(7,5)};
 
-        GetSkyline();
+        List<Point> skyline;
+        skyline = GetSkyline();
 
     }
 
@@ -67,6 +69,30 @@ public class DataManager : MonoBehaviour
         maxY = my;
     }
 
+    public List<Point> LocalSkyline(List<Point> toTest)
+    {
+        List<Point> sky = null;
+        if (toTest.Count == 1)
+            return toTest;
+
+
+        return sky;
+    }
+
+    public List<Point> CheckSkyline(List<Point> skyline, List<Point> toCheck)
+    {
+        foreach (Point p in toCheck)
+        {
+            foreach (Point s in skyline)
+            {
+
+            }
+        }
+
+        return skyline;
+    }
+
+
     public List<Point> GetSkyline() // index method
     {
         List<Point> skyline = new List<Point>();
@@ -95,6 +121,23 @@ public class DataManager : MonoBehaviour
             {
                 Debug.Log(kvp.Key + " : "  + kvp.Value[i].y);
             }
+        }
+
+        List<Point> batch1 = list1[0];
+        list1.RemoveAt(0);
+        List<Point> batch2 = list2[0];
+        list2.RemoveAt(0);
+
+        while(true)
+        {
+            List<Point> toTest;
+            if (batch1[0].x < batch2[0].y)
+                toTest = batch1;
+            else
+                toTest = batch2;
+
+
+
         }
 
 
