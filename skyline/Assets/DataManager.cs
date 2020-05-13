@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class DataManager : MonoBehaviour
     List<Record> records = null;
     List<Point> points;
 
+    WindowGraph graph;
+
  
     int maxX = 0;
     int maxY = 0;
@@ -16,14 +19,15 @@ public class DataManager : MonoBehaviour
     private void Awake()
     {
         //dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
+        graph = GameObject.Find("Window_Graph").GetComponent<WindowGraph>();
     }
 
     private void Start()
     {
         //while(records == null)
-       // records = dbHandler.GetRecords();
+        // records = dbHandler.GetRecords();
 
-       // GetAllPoints(4, 9);
+        // GetAllPoints(4, 9);
         points = new List<Point>() {new Point(1,9),
         new Point(2,10),
         new Point(4,8),
@@ -40,7 +44,23 @@ public class DataManager : MonoBehaviour
 
         List<Point> skyline;
         skyline = GetSkyline();
+        skyline.Sort((p1, p2) => p1.x.CompareTo(p2.x));
+        GraphInit();
+        graph.ShowGraph(skyline);
+        graph.ShowCircles(points.Except(skyline).ToList());
+    }
 
+
+    private void GraphInit()
+    {
+        float xMax = 0;
+        float yMax = 0;
+        for (int i = 0; i < points.Count; i++)
+        {
+            xMax = Mathf.Max(xMax, points[i].x);
+            yMax = Mathf.Max(yMax, points[i].y);
+        }
+        graph.InitMax(xMax, yMax);
     }
 
     private int Domination(Point p1, Point p2)
@@ -71,22 +91,43 @@ public class DataManager : MonoBehaviour
 
     public List<Point> LocalSkyline(List<Point> toTest)
     {
-        List<Point> sky = null;
+        List<Point> sky = new List<Point>();
         if (toTest.Count == 1)
             return toTest;
-
+        for (int i = 0; i < toTest.Count; i++)
+        {
+            bool domination = true;
+            for (int j = 0; j < toTest.Count; j++)
+            {
+                if (i != j)
+                {
+                    if (Domination(toTest[i], toTest[j]) != 1)
+                        domination = false;
+                }
+            }
+            if (domination)
+            {
+                sky.Add(toTest[i]);
+            }
+        }
 
         return sky;
     }
 
     public List<Point> CheckSkyline(List<Point> skyline, List<Point> toCheck)
     {
+        if (toCheck == null)
+            return skyline;
         foreach (Point p in toCheck)
         {
+            bool valid = true;
             foreach (Point s in skyline)
             {
-
+                if (Domination(s, p) == 1)
+                    valid = false;
             }
+            if (valid)
+                skyline.Add(p);
         }
 
         return skyline;
@@ -98,15 +139,18 @@ public class DataManager : MonoBehaviour
         List<Point> skyline = new List<Point>();
         SortedList<int, List<Point>> list1 = new SortedList<int, List<Point>>();
         SortedList<int, List<Point>> list2 = new SortedList<int, List<Point>>();
-        
-        foreach(Point p in points)
+
+        foreach (Point p in points)
         {
             int min = p.MinC();
             SortedList<int, List<Point>> toInsert;
             if (min == p.x)
                 toInsert = list1;
             else
+            {
+                Debug.Log("Inserting: " + p.ToString() + " to list2");
                 toInsert = list2;
+            }
             if (!toInsert.ContainsKey(min))
             {
                 toInsert.Add(min, new List<Point>());
@@ -115,31 +159,53 @@ public class DataManager : MonoBehaviour
 
         }
 
-        foreach(KeyValuePair<int,List<Point>> kvp in list1)
+        foreach (KeyValuePair<int, List<Point>> kvp in list1)
         {
             for (int i = 0; i < kvp.Value.Count; i++)
             {
-                Debug.Log(kvp.Key + " : "  + kvp.Value[i].y);
+                Debug.Log(kvp.Key + " : " + kvp.Value[i].y);
             }
         }
 
-        List<Point> batch1 = list1[0];
-        list1.RemoveAt(0);
-        List<Point> batch2 = list2[0];
-        list2.RemoveAt(0);
 
-        while(true)
+        List<Point> batch1 = list1.Values[0];
+        List<Point> batch2 = list2.Values[0];
+
+        while (true)
         {
+            Debug.Log("Iter " + list1.Count + ";" + list2.Count);
             List<Point> toTest;
             if (batch1[0].x < batch2[0].y)
-                toTest = batch1;
+            {
+                skyline = CheckSkyline(skyline, LocalSkyline(batch1));
+                list1.RemoveAt(0);
+                if (list1.Count == 0 || list2.Count == 0)
+                    break;
+                batch1 = list1.Values[0];
+            }
             else
-                toTest = batch2;
-
+            {
+                skyline = CheckSkyline(skyline, LocalSkyline(batch2));
+                list2.RemoveAt(0);
+                if (list1.Count == 0 || list2.Count == 0)
+                    break;
+                batch2 = list2.Values[0];
+            }
 
 
         }
 
+        //skyline = CheckSkyline(skyline, LocalSkyline(toTest));
+        //if (list1.Count == 0 || list2.Count == 0)
+        //    break;
+        //batch1 = list1.Values[0];
+        //batch2 = list2.Values[0];
+
+        Debug.Log("Skyline:");
+        foreach(Point p in skyline)
+        {
+            Debug.Log(p.x + ";" + p.y);
+        }
 
         return skyline;
     }

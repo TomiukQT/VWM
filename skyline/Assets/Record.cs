@@ -42,4 +42,6 @@ public class Record : MonoBehaviour
     {
         return s == "basic" ? Equipment.BASIC : s == "normal" ? Equipment.NORMAL : s == "luxury" ? Equipment.LUXURY : Equipment.UNKNOWN;
     }
+
+
 }
