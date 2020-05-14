@@ -25,14 +25,56 @@ public class DatabaseWindow : MonoBehaviour
     }
 
 
-    private void Show()
+    public void Show(int i = 1)
+    {
+
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.id.CompareTo(p2.id));
+        UpdateTable(records);
+        
+    }
+
+    public void ShowByPrice(int i = 1)
+    {
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.price.CompareTo(p2.price));
+        UpdateTable(records);
+    }
+
+    public void ShowByDriven(int i = 1)
+    {
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.driven.CompareTo(p2.driven));
+        UpdateTable(records);
+    }
+
+    public void ShowByPerformance(int i = 1)
+    {
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.performance.CompareTo(p2.performance));
+        UpdateTable(records);
+    }
+
+    public void ShowByCons(int i = 1)
+    {
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.consumption.CompareTo(p2.consumption));
+        UpdateTable(records);
+    }
+
+    public void ShowByYear(int i = 1)
+    {
+        List<Record> records = new List<Record>(originalRecords);
+        records.Sort((p1, p2) => i * p1.year.CompareTo(p2.year));
+        UpdateTable(records);
+    }
+
+    public void UpdateTable(List<Record> records)
     {
         Clear();
-        List<Record> records = new List<Record>(originalRecords);
-        records.Sort((p1, p2) => p1.id.CompareTo(p2.id));
-        foreach(Record r in records)
+        foreach (Record r in records)
         {
-            GameObject rec = Instantiate(recordPrefab,contentParent);
+            GameObject rec = Instantiate(recordPrefab, contentParent);
             SetRecordText(rec, r);
         }
     }
