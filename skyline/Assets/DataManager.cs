@@ -16,6 +16,13 @@ public class DataManager : MonoBehaviour
     int maxX = 0;
     int maxY = 0;
 
+    int att1 = -1;
+    int att2 = -1;
+
+
+
+
+
     private void Awake()
     {
         dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
@@ -25,7 +32,9 @@ public class DataManager : MonoBehaviour
     public void DataReady()
     {
         records = new List<Record>(dbHandler.GetRecords());
-        GetAllPoints(4, 5);
+        att1 = 4;
+        att2 = 5;
+        GetAllPoints(att1, att2);
         //points = new List<Point>() {new Point(1,9),
         //new Point(2,10),
         //new Point(4,8),
@@ -210,5 +219,15 @@ public class DataManager : MonoBehaviour
         }
 
         return skyline;
+    }
+
+
+    public bool SwitchAtt(int att)
+    {
+        if(att1 == att)
+        {
+            att1 =
+        }
+
     }
 }
