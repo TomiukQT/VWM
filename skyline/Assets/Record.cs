@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
+
+using TMPro;
+
 
 public enum Equipment { BASIC, NORMAL, LUXURY, UNKNOWN};
 
-public class Record : MonoBehaviour
+public class Record
 {
     public int id;
     public string carName;
@@ -17,6 +21,7 @@ public class Record : MonoBehaviour
     public int consumption;
     public int year;
 
+    
     public Record(int _id, string _carName, string _brand, string _color,
         int _price, int _driven, int _performance, string _equipment,
         int _consumption, int _year)
@@ -42,6 +47,8 @@ public class Record : MonoBehaviour
     {
         return s == "basic" ? Equipment.BASIC : s == "normal" ? Equipment.NORMAL : s == "luxury" ? Equipment.LUXURY : Equipment.UNKNOWN;
     }
+
+   
 
 
 }

@@ -18,29 +18,27 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        //dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
+        dbHandler = GameObject.Find("DatabaseHandler").GetComponent<DatabaseHandler>();
         graph = GameObject.Find("Window_Graph").GetComponent<WindowGraph>();
     }
 
-    private void Start()
+    public void DataReady()
     {
-        //while(records == null)
-        // records = dbHandler.GetRecords();
-
-        // GetAllPoints(4, 9);
-        points = new List<Point>() {new Point(1,9),
-        new Point(2,10),
-        new Point(4,8),
-        new Point(5,6),
-        new Point(6,7),
-        new Point(9,10),
-        new Point(9,1),
-        new Point(3,2),
-        new Point(6,2),
-        new Point(4,3),
-        new Point(8,3),
-        new Point(10,4),
-        new Point(7,5)};
+        records = new List<Record>(dbHandler.GetRecords());
+        GetAllPoints(4, 5);
+        //points = new List<Point>() {new Point(1,9),
+        //new Point(2,10),
+        //new Point(4,8),
+        //new Point(5,6),
+        //new Point(6,7),
+        //new Point(9,10),
+        //new Point(9,1),
+        //new Point(3,2),
+        //new Point(6,2),
+        //new Point(4,3),
+        //new Point(8,3),
+        //new Point(10,4),
+        //new Point(7,5)};
 
         List<Point> skyline;
         skyline = GetSkyline();
@@ -55,12 +53,16 @@ public class DataManager : MonoBehaviour
     {
         float xMax = 0;
         float yMax = 0;
+        float xMin = 1000000;
+        float yMin = 1000000;
         for (int i = 0; i < points.Count; i++)
         {
             xMax = Mathf.Max(xMax, points[i].x);
             yMax = Mathf.Max(yMax, points[i].y);
+            xMin = Mathf.Min(xMin, points[i].x);
+            yMin = Mathf.Min(yMin, points[i].y);
         }
-        graph.InitMax(xMax, yMax);
+        graph.InitMax(xMax, yMax, xMin, yMin);
     }
 
     private int Domination(Point p1, Point p2)

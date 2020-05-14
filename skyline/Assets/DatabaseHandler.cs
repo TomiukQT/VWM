@@ -9,9 +9,12 @@ using System;
 public class DatabaseHandler : MonoBehaviour
 {
 
+    DataManager manager;
+    DatabaseWindow database;
+
     MySqlConnection connection;
     
-    List<Record> records = null;
+    List<Record> records;
     MySqlConnection Connect()
     {
         string connString = "server=sql7.freemysqlhosting.net;database=	sql7339576;uid=	sql7339576;pwd=STmPNXBdXl;";
@@ -21,7 +24,17 @@ public class DatabaseHandler : MonoBehaviour
     
     private void Awake()
     {
+
+        records = new List<Record>();
+        manager = GameObject.Find("DataManager").GetComponent<DataManager>();
+        database = GameObject.Find("DatabaseWindow").GetComponent<DatabaseWindow>();
+
         connection = Connect();
+        
+    }
+
+    private void Start()
+    {
         try
         {
             Debug.Log("Connecting to sql");
@@ -30,23 +43,25 @@ public class DatabaseHandler : MonoBehaviour
 
             if (res != null)
             {
-                while(res.Read())
+                while (res.Read())
                 {
-                    Debug.Log(res.GetString(0));
-                    Debug.Log(res.GetString(1));
+                    //Debug.Log(res.GetString(0));
+                    //Debug.Log(res.GetString(1));
                     Record r = new Record(res.GetInt32(0), res.GetString(1), res.GetString(2), res.GetString(3),
                         res.GetInt32(4), res.GetInt32(5), res.GetInt32(6), res.GetString(7), res.GetInt32(8), res.GetInt32(9));
                     records.Add(r);
                 }
-         
+
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log(e.ToString());
         }
         connection.Close();
         Debug.Log("Deone.");
+        manager.DataReady();
+        database.DataReady();
     }
 
     private MySqlDataReader GetData()

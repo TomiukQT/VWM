@@ -6,10 +6,13 @@ using UnityEngine;
 public class WindowGraph : MonoBehaviour
 {
     [SerializeField] private Sprite circleSprite;
+    
     private RectTransform graphContainer;
 
     float yMaximum = 10f;
     float xMaximum = 10f;
+    float xMinimum = 10f;
+    float yMinimum = 10f;
 
     private void Awake()
     {
@@ -17,10 +20,12 @@ public class WindowGraph : MonoBehaviour
 
     }
 
-    public void InitMax(float x, float y)
+    public void InitMax(float x, float y, float x1, float y1)
     {
         xMaximum = x;
         yMaximum = y;
+        xMinimum = x1;
+        yMinimum = y1;
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition, Color? color = null)
@@ -39,8 +44,8 @@ public class WindowGraph : MonoBehaviour
 
     public void ShowGraph(List<Point> valueList)
     {
-        float graphHeight = graphContainer.sizeDelta.y;
-        float graphWidth = graphContainer.sizeDelta.x;
+        float graphHeight = graphContainer.sizeDelta.y - 20f;
+        float graphWidth = graphContainer.sizeDelta.x - 20f;
         
         //float xSize = 50f;
 
@@ -48,9 +53,13 @@ public class WindowGraph : MonoBehaviour
 
         for (int i = 0; i < valueList.Count; i++)
         {
-            float xPosition = (valueList[i].x / xMaximum) * graphWidth;
-            float yPosition = (valueList[i].y / yMaximum) * graphHeight;
+            float xPosition = (valueList[i].x / (xMaximum - xMinimum)) * graphWidth;
+            float yPosition = (valueList[i].y / (yMaximum-yMinimum)) * graphHeight;
             GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition),Color.green);
+            if (lastCircle == null)
+            {
+                CreateDotConnection(new Vector2(circleGameObject.GetComponent<RectTransform>().anchoredPosition.x, 10000), circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+            }
             if (lastCircle != null)
             {
                 CreateDotConnection(lastCircle.GetComponent<RectTransform>().anchoredPosition,
@@ -58,6 +67,10 @@ public class WindowGraph : MonoBehaviour
                 CreateDotConnection(new Vector2(circleGameObject.GetComponent<RectTransform>().anchoredPosition.x, lastCircle.GetComponent<RectTransform>().anchoredPosition.y),
                     circleGameObject.GetComponent<RectTransform>().anchoredPosition);
 
+            }
+            if(i == valueList.Count-1)
+            {
+                CreateDotConnection(circleGameObject.GetComponent<RectTransform>().anchoredPosition, new Vector2(10000,circleGameObject.GetComponent<RectTransform>().anchoredPosition.y ));
             }
             lastCircle = circleGameObject;
         }
@@ -69,8 +82,8 @@ public class WindowGraph : MonoBehaviour
         float graphWidth = graphContainer.sizeDelta.x;
         for (int i = 0; i < points.Count; i++)
         {
-            float xPosition = (points[i].x / xMaximum) * graphWidth;
-            float yPosition = (points[i].y / yMaximum) * graphHeight;
+            float xPosition = (points[i].x / (xMaximum - xMinimum)) * graphWidth;
+            float yPosition = (points[i].y / (yMaximum - yMinimum)) * graphHeight;
             CreateCircle(new Vector2(xPosition, yPosition));
         }
     }
