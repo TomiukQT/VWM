@@ -259,8 +259,8 @@ public class DataManager : MonoBehaviour
         {
             Generate();
         }
-        att1Text.text = AttToString(att1);
-        att2Text.text = AttToString(att2);
+        att1Text.text = "X: " + AttToString(att1);
+        att2Text.text = "Y: " + AttToString(att2);
 
     }
 
