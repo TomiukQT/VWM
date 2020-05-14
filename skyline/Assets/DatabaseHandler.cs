@@ -27,10 +27,10 @@ public class DatabaseHandler : MonoBehaviour
 
     private void Start()
     {
-        string path = "Assets/data.txt";
-
+        TextAsset file = Resources.Load("data") as TextAsset;
+        Debug.Log(file.text);
         //Read the text from directly from the test.txt file
-        StreamReader reader = new StreamReader(path);
+        StringReader reader = new StringReader(file.text);
         string line;
         while ((line = reader.ReadLine()) != null)
         {
