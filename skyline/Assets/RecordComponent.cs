@@ -12,11 +12,17 @@ public class RecordComponent : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject detailWindowPrefab;
     private GameObject detailWindow = null;
 
+    private void Awake()
+    {
+        detailWindowPrefab = Resources.Load<GameObject>("DetailWindow");
+    }
+
     private void ToggleDetail()
     {
         if (detailWindow == null)
         {
-            detailWindow = Instantiate(detailWindowPrefab, GameObject.Find("UI").transform);
+            detailWindow = Instantiate(detailWindowPrefab, gameObject.transform);
+            detailWindow.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             SetText();
         }
         else

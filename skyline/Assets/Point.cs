@@ -7,10 +7,13 @@ public class Point
     public int x;
     public int y;
 
-    public Point(int _x, int _y)
+    public Record record;
+
+    public Point(int _x, int _y, Record _record)
     {
         x = _x;
         y = _y;
+        record = _record;
     }
 
     public int MinC()

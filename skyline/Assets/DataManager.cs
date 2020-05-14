@@ -73,7 +73,7 @@ public class DataManager : MonoBehaviour
     {
         points = new List<Point>();
         foreach (Record r in records)
-            points.Add(new Point(r.GetValue(i1), r.GetValue(i2)));
+            points.Add(new Point(r.GetValue(i1), r.GetValue(i2),r));
     }
 
     private void GetMaxXY()
