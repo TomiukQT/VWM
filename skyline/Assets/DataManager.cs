@@ -1,11 +1,17 @@
 ﻿using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
+using TMPro;
+
 public class DataManager : MonoBehaviour
+
 {
     DatabaseHandler dbHandler;
+
+    bool dataReady = false;
 
     List<Record> records = null;
     List<Point> points;
@@ -19,7 +25,8 @@ public class DataManager : MonoBehaviour
     int att1 = -1;
     int att2 = -1;
 
-
+    [SerializeField] private TextMeshProUGUI att1Text;
+    [SerializeField] private TextMeshProUGUI att2Text;
 
 
 
@@ -31,14 +38,17 @@ public class DataManager : MonoBehaviour
 
     public void DataReady()
     {
+        dataReady = true;
+    }
+
+    public void Generate()
+    {
         records = new List<Record>(dbHandler.GetRecords());
-        att1 = 4;
-        att2 = 5;
         GetAllPoints(att1, att2);
         //points = new List<Point>() {new Point(1,9),
         //new Point(2,10),
         //new Point(4,8),
-        //new Point(5,6),
+        //new Point(5,6),   
         //new Point(6,7),
         //new Point(9,10),
         //new Point(9,1),
@@ -178,39 +188,55 @@ public class DataManager : MonoBehaviour
             }
         }
 
-
-        List<Point> batch1 = list1.Values[0];
-        List<Point> batch2 = list2.Values[0];
-
-        while (true)
+        if (list1.Count == 0)
         {
-            Debug.Log("Iter " + list1.Count + ";" + list2.Count);
-            List<Point> toTest;
-            if (batch1[0].x < batch2[0].y)
+            while(true)
             {
-                skyline = CheckSkyline(skyline, LocalSkyline(batch1));
-                list1.RemoveAt(0);
-                if (list1.Count == 0 || list2.Count == 0)
-                    break;
-                batch1 = list1.Values[0];
-            }
-            else
-            {
-                skyline = CheckSkyline(skyline, LocalSkyline(batch2));
+                skyline = CheckSkyline(skyline, LocalSkyline(list2.Values[0]));
                 list2.RemoveAt(0);
-                if (list1.Count == 0 || list2.Count == 0)
+                if (list2.Count == 0)
                     break;
-                batch2 = list2.Values[0];
             }
-
-
         }
+        else if (list2.Count == 0)
+        {
+            while (true)
+            {
+                skyline = CheckSkyline(skyline, LocalSkyline(list1.Values[0]));
+                list1.RemoveAt(0);
+                if (list1.Count == 0)
+                    break;
+            }
+        }
+        else
+        {
+            List<Point> batch1 = list1.Values[0];
+            List<Point> batch2 = list2.Values[0];
 
-        //skyline = CheckSkyline(skyline, LocalSkyline(toTest));
-        //if (list1.Count == 0 || list2.Count == 0)
-        //    break;
-        //batch1 = list1.Values[0];
-        //batch2 = list2.Values[0];
+            while (true)
+            {
+                Debug.Log("Iter " + list1.Count + ";" + list2.Count);
+                List<Point> toTest;
+                if (batch1[0].x < batch2[0].y)
+                {
+                    skyline = CheckSkyline(skyline, LocalSkyline(batch1));
+                    list1.RemoveAt(0);
+                    if (list1.Count == 0 || list2.Count == 0)
+                        break;
+                    batch1 = list1.Values[0];
+                }
+                else
+                {
+                    skyline = CheckSkyline(skyline, LocalSkyline(batch2));
+                    list2.RemoveAt(0);
+                    if (list1.Count == 0 || list2.Count == 0)
+                        break;
+                    batch2 = list2.Values[0];
+                }
+
+
+            }
+        }
 
         Debug.Log("Skyline:");
         foreach(Point p in skyline)
@@ -222,12 +248,49 @@ public class DataManager : MonoBehaviour
     }
 
 
-    public bool SwitchAtt(int att)
+    private string AttToString(int i)
     {
+        return i == 4 ? "price" : i == 5 ? "driven" : i == 6 ? "performance" : i == 8 ? "consumption" : i == 9 ? "year" : "NONE";
+    }
+
+    public void Switch(int att)
+    {
+        if (SwitchAtt(att) && dataReady)
+        {
+            Generate();
+        }
+        att1Text.text = AttToString(att1);
+        att2Text.text = AttToString(att2);
+
+    }
+
+    private bool SwitchAtt(int att)
+    {
+        if (att < 0 || AttToString(att) == "NONE")
+            return false;
         if(att1 == att)
         {
-            att1 =
+            att1 = att2;
+            att2 = -1;
+            return false;
+        }
+        if(att2 == att)
+        {
+            att2 = -1;
+            return false;
+        }
+        if(att1 < 0)
+        {
+            att1 = att;
+            return false;
+        }
+        if(att2 < 0)
+        {
+            att2 = att;
+            return true;
         }
 
+
+        return false;
     }
 }

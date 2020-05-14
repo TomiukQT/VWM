@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 
+using TMPro;
+
 public class WindowGraph : MonoBehaviour
 {
     [SerializeField] private Sprite circleSprite;
@@ -22,10 +24,16 @@ public class WindowGraph : MonoBehaviour
 
     public void InitMax(float x, float y, float x1, float y1)
     {
-        xMaximum = x;
-        yMaximum = y;
-        xMinimum = x1;
-        yMinimum = y1;
+        xMaximum = x + 0.01f * x;
+        yMaximum = y + 0.01f * y;
+        xMinimum = x1 - 0.02f * x1;
+        yMinimum = y1 - 0.02f * y1;
+
+        GameObject.Find("maxX").GetComponent<TextMeshProUGUI>().text = x.ToString();
+        GameObject.Find("maxY").GetComponent<TextMeshProUGUI>().text = y.ToString();
+        GameObject.Find("minX").GetComponent<TextMeshProUGUI>().text = x1.ToString();
+        GameObject.Find("minY").GetComponent<TextMeshProUGUI>().text = y1.ToString();
+
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition, Color? color = null)
@@ -46,15 +54,20 @@ public class WindowGraph : MonoBehaviour
     {
         float graphHeight = graphContainer.sizeDelta.y - 20f;
         float graphWidth = graphContainer.sizeDelta.x - 20f;
-        
+
         //float xSize = 50f;
+        foreach (Transform child in graphContainer.transform)
+        {
+            if(child.name != "background")
+                Destroy(child.gameObject);
+        }
 
         GameObject lastCircle = null;
 
         for (int i = 0; i < valueList.Count; i++)
         {
-            float xPosition = (valueList[i].x / (xMaximum - xMinimum)) * graphWidth;
-            float yPosition = (valueList[i].y / (yMaximum-yMinimum)) * graphHeight;
+            float xPosition = ((valueList[i].x - xMinimum) / (xMaximum - xMinimum)) * graphWidth;
+            float yPosition = ((valueList[i].y - yMinimum) / (yMaximum-yMinimum)) * graphHeight;
             GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition),Color.green);
             RecordComponent rc = circleGameObject.AddComponent<RecordComponent>();
             rc.r = valueList[i].record;
@@ -79,17 +92,17 @@ public class WindowGraph : MonoBehaviour
         }
     }
 
-    public void ShowCircles(List<Point> points)
+    public void ShowCircles(List<Point> valueList)
     {
         float graphHeight = graphContainer.sizeDelta.y;
         float graphWidth = graphContainer.sizeDelta.x;
-        for (int i = 0; i < points.Count; i++)
+        for (int i = 0; i < valueList.Count; i++)
         {
-            float xPosition = (points[i].x / (xMaximum - xMinimum)) * graphWidth;
-            float yPosition = (points[i].y / (yMaximum - yMinimum)) * graphHeight;
+            float xPosition = ((valueList[i].x - xMinimum) / (xMaximum - xMinimum)) * graphWidth;
+            float yPosition = ((valueList[i].y - yMinimum) / (yMaximum - yMinimum)) * graphHeight;
             GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
             RecordComponent rc = circleGameObject.AddComponent<RecordComponent>();
-            rc.r = points[i].record;
+            rc.r = valueList[i].record;
         }
     }
 
