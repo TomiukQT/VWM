@@ -58,10 +58,15 @@ public class DataManager : MonoBehaviour
         //new Point(8,3),
         //new Point(10,4),
         //new Point(7,5)};
+        var temp = Time.realtimeSinceStartup;
+       
 
         List<Point> skyline;
         skyline = GetSkyline();
         skyline.Sort((p1, p2) => p1.x.CompareTo(p2.x));
+
+        Debug.Log("Time for n: " + (Time.realtimeSinceStartup - temp).ToString("f6") + " sec.");
+
         GraphInit();
         graph.ShowGraph(skyline);
         graph.ShowCircles(points.Except(skyline).ToList());
@@ -169,7 +174,7 @@ public class DataManager : MonoBehaviour
                 toInsert = list1;
             else
             {
-                Debug.Log("Inserting: " + p.ToString() + " to list2");
+                //Debug.Log("Inserting: " + p.ToString() + " to list2");
                 toInsert = list2;
             }
             if (!toInsert.ContainsKey(min))
@@ -180,6 +185,7 @@ public class DataManager : MonoBehaviour
 
         }
 
+        /*
         foreach (KeyValuePair<int, List<Point>> kvp in list1)
         {
             for (int i = 0; i < kvp.Value.Count; i++)
@@ -187,6 +193,7 @@ public class DataManager : MonoBehaviour
                 Debug.Log(kvp.Key + " : " + kvp.Value[i].y);
             }
         }
+        */
 
         if (list1.Count == 0)
         {
@@ -215,7 +222,7 @@ public class DataManager : MonoBehaviour
 
             while (true)
             {
-                Debug.Log("Iter " + list1.Count + ";" + list2.Count);
+                //Debug.Log("Iter " + list1.Count + ";" + list2.Count);
                 List<Point> toTest;
                 if (batch1[0].x < batch2[0].y)
                 {
@@ -238,11 +245,11 @@ public class DataManager : MonoBehaviour
             }
         }
 
-        Debug.Log("Skyline:");
+        /*Debug.Log("Skyline:");
         foreach(Point p in skyline)
         {
             Debug.Log(p.x + ";" + p.y);
-        }
+        }*/
 
         return skyline;
     }
